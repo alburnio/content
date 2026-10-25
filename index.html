@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Affiliate Product Pose Prompt Generator</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        darkBg: '#0b0f19',
+                        cardBg: '#131c2e',
+                        accentNeon: '#06b6d4',
+                        accentPurple: '#8b5cf6',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .glass-panel {
+            background: rgba(19, 28, 46, 0.75);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+    </style>
+</head>
+<body class="bg-darkBg text-slate-100 min-h-screen font-sans antialiased selection:bg-cyan-500 selection:text-black">
+
+    <div class="max-w-4xl mx-auto px-4 py-8">
+        <!-- Header -->
+        <header class="text-center mb-10">
+            <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight bg-gradient-to-r from-cyan-400 via-indigo-400 to-purple-500 bg-clip-text text-transparent mb-2">
+                Affiliate Pose Prompt Generator
+            </h1>
+            <p class="text-slate-400 text-sm md:text-base">
+                Hasilkan 5 variasi prompt gambar & video Meta AI adaptif berdasarkan produk dan karakter Anda.
+            </p>
+        </header>
+
+        <!-- Main Form Card -->
+        <main class="glass-panel rounded-2xl p-6 md:p-8 shadow-2xl mb-8">
+            <form id="generatorForm" class="space-y-6">
+                
+                <!-- 1. Upload Wajah Karakter -->
+                <div>
+                    <label class="block text-sm font-semibold text-cyan-300 mb-2">
+                        1. Unggah Foto Wajah Karakter / Model
+                    </label>
+                    <div class="flex items-center justify-center w-full">
+                        <label for="faceFile" class="flex flex-col items-center justify-center w-full h-32 border-2 border-slate-600 border-dashed rounded-xl cursor-pointer bg-slate-900/50 hover:bg-slate-800/60 transition-all">
+                            <div class="flex flex-col items-center justify-center pt-5 pb-6 px-4 text-center">
+                                <svg class="w-8 h-8 mb-2 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                                <p class="text-sm text-slate-300"><span class="font-semibold text-cyan-400">Klik untuk memilih file</span> atau seret ke sini</p>
+                                <p class="text-xs text-slate-500 mt-1" id="fileNameDisplay">PNG, JPG atau WEBP (Maks. 10MB)</p>
+                            </div>
+                            <input id="faceFile" type="file" accept="image/*" class="hidden" onchange="handleFileSelect(event)" />
+                        </label>
+                    </div>
+                </div>
+
+                <!-- 2. Kategori & Detail Produk -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-semibold text-cyan-300 mb-2" for="productCategory">
+                            2. Kategori Produk
+                        </label>
+                        <select id="productCategory" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:border-cyan-400 transition-colors" required>
+                            <option value="" disabled selected>Pilih Kategori Produk</option>
+                            <option value="Baju / Pakaian">Baju / Pakaian</option>
+                            <option value="Jilbab / Kerudung">Jilbab / Kerudung</option>
+                            <option value="Sepatu / Alas Kaki">Sepatu / Alas Kaki</option>
+                            <option value="Makanan / Minuman">Makanan / Minuman</option>
+                            <option value="Lainnya">Lainnya (Bebas)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-cyan-300 mb-2" for="productDetail">
+                            Deskripsi / Detail Spesifik Produk
+                        </label>
+                        <input type="text" id="productDetail" placeholder="Contoh: Oversized hoodie hitam motif bordir..." class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:border-cyan-400 transition-colors" required />
+                    </div>
+                </div>
+
+                <!-- 3. Klarifikasi Latar (Setting) & Vibe -->
+                <div class="space-y-4 pt-2 border-t border-slate-800">
+                    <h3 class="text-sm font-semibold text-cyan-300">3. Penyesuaian Latar (Setting) & Suasana (Vibe)</h3>
+                    
+                    <!-- Setting Selection -->
+                    <div>
+                        <label class="block text-xs font-medium text-slate-400 mb-2">Pilih Rekomendasi Latar atau Ketik Manual:</label>
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-2">
+                            <button type="button" onclick="setPreset('setting', 'Modern Studio')" class="preset-btn-setting text-xs py-2 px-3 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg text-slate-300 transition-all">Studio Clean</button>
+                            <button type="button" onclick="setPreset('setting', 'Aesthetic Bedroom')" class="preset-btn-setting text-xs py-2 px-3 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg text-slate-300 transition-all">Kamar Estetik</button>
+                            <button type="button" onclick="setPreset('setting', 'Trendy Cafe')" class="preset-btn-setting text-xs py-2 px-3 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg text-slate-300 transition-all">Kafe Trendy</button>
+                            <button type="button" onclick="setPreset('setting', 'Urban Street')" class="preset-btn-setting text-xs py-2 px-3 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg text-slate-300 transition-all">Urban Street</button>
+                        </div>
+                        <input type="text" id="settingInput" placeholder="Contoh: Studio minimalis pencahayaan softbox..." class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:border-cyan-400 transition-colors text-sm" required />
+                    </div>
+
+                    <!-- Vibe Selection -->
+                    <div>
+                        <label class="block text-xs font-medium text-slate-400 mb-2">Pilih Rekomendasi Suasana (Vibe) atau Ketik Manual:</label>
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-2">
+                            <button type="button" onclick="setPreset('vibe', 'Cinematic & Moody')" class="preset-btn-vibe text-xs py-2 px-3 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg text-slate-300 transition-all">Cinematic</button>
+                            <button type="button" onclick="setPreset('vibe', 'Edgy & Bold')" class="preset-btn-vibe text-xs py-2 px-3 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg text-slate-300 transition-all">Edgy</button>
+                            <button type="button" onclick="setPreset('vibe', 'Fun & Energetic')" class="preset-btn-vibe text-xs py-2 px-3 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg text-slate-300 transition-all">Fun</button>
+                            <button type="button" onclick="setPreset('vibe', 'Clean & High-End Commercial')" class="preset-btn-vibe text-xs py-2 px-3 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg text-slate-300 transition-all">High-End</button>
+                        </div>
+                        <input type="text" id="vibeInput" placeholder="Contoh: High-end commercial, vibrant warm tone..." class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-3 text-slate-200 focus:outline-none focus:border-cyan-400 transition-colors text-sm" required />
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" id="generateBtn" class="w-full py-4 bg-gradient-to-r from-cyan-500 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-black font-bold rounded-xl shadow-lg transition-all transform active:scale-[0.99] flex items-center justify-center space-x-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                    <span>Analisis & Generate 5 Pilihan Pose Adaptif</span>
+                </button>
+            </form>
+        </main>
+
+        <!-- Output Section (Hidden initially) -->
+        <section id="outputSection" class="hidden space-y-6">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+                <h2 class="text-xl font-bold text-cyan-300">Hasil 5 Varian Pose Adaptif</h2>
+                <span id="outputCategoryBadge" class="text-xs px-3 py-1 bg-cyan-900/50 text-cyan-300 border border-cyan-700 rounded-full"></span>
+            </div>
+
+            <!-- Container for 5 Variants -->
+            <div id="variantsContainer" class="space-y-6">
+                <!-- Javascript will inject cards here -->
+            </div>
+        </section>
+    </div>
+
+    <!-- Script Logic -->
+    <script>
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            const display = document.getElementById('fileNameDisplay');
+            if (file) {
+                display.textContent = `File dipilih: ${file.name}`;
+                display.classList.add('text-cyan-400');
+            }
+        }
+
+        function setPreset(type, value) {
+            if (type === 'setting') {
+                document.getElementById('settingInput').value = value;
+            } else if (type === 'vibe') {
+                document.getElementById('vibeInput').value = value;
+            }
+        }
+
+        document.getElementById('generatorForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const category = document.getElementById('productCategory').value;
+            const detail = document.getElementById('productDetail').value;
+            const setting = document.getElementById('settingInput').value;
+            const vibe = document.getElementById('vibeInput').value;
+
+            // Show loading state simulation or direct generation
+            const btn = document.getElementById('generateBtn');
+            btn.innerHTML = `<svg class="animate-spin -ml-1 mr-3 h-5 text-black" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg> Menganalisis & Menyusun 5 Varian Pose...`;
+            btn.disabled = true;
+
+            setTimeout(() => {
+                generateOutputVariants(category, detail, setting, vibe);
+                btn.innerHTML = `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg><span>Analisis & Generate 5 Pilihan Pose Adaptif</span>`;
+                btn.disabled = false;
+                
+                // Scroll to output
+                document.getElementById('outputSection').scrollIntoView({ behavior: 'smooth' });
+            }, 800);
+        });
+
+        function generateOutputVariants(category, detail, setting, vibe) {
+            const outputSection = document.getElementById('outputSection');
+            const badge = document.getElementById('outputCategoryBadge');
+            const container = document.getElementById('variantsContainer');
+
+            badge.textContent = `Kategori: ${category}`;
+            outputSection.classList.remove('hidden');
+            container.innerHTML = '';
+
+            // Generate 5 contextual variations based on category
+            let poses = getPosesByCategory(category, detail);
+
+            poses.forEach((p, index) => {
+                const card = document.createElement('div');
+                card.className = "glass-panel rounded-xl p-5 md:p-6 border border-slate-800 shadow-lg relative overflow-hidden";
+                card.innerHTML = `
+                    <div class="absolute top-0 left-0 bg-gradient-to-r from-cyan-500 to-indigo-600 text-black text-xs font-bold px-3 py-1 rounded-br-lg">
+                        Opsi Pose #${index + 1}: ${p.title}
+                    </div>
+                    <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Image Prompt Column -->
+                        <div class="bg-slate-900/80 p-4 rounded-xl border border-slate-800 flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-xs font-bold text-cyan-400 uppercase tracking-wider">Prompt Gambar AI (Midjourney/DALL-E)</span>
+                                    <button onclick="copyText(this, 'img-prompt-${index}')" class="text-xs text-slate-400 hover:text-cyan-300 bg-slate-800 px-2 py-1 rounded transition-colors">Salin</button>
+                                </div>
+                                <p id="img-prompt-${index}" class="text-xs md:text-sm text-slate-300 leading-relaxed font-mono">
+                                    A professional affiliate marketing photoshoot in ${setting}, featuring character wearing/using ${detail}. ${p.imageFocus}. Atmosphere: ${vibe}. Photorealistic, 8k resolution, highly detailed texture, professional studio lighting --ar 9:16 --v 6.0
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Meta AI Video Prompt Column -->
+                        <div class="bg-slate-900/80 p-4 rounded-xl border border-slate-800 flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-xs font-bold text-purple-400 uppercase tracking-wider">Prompt Video Meta AI</span>
+                                    <button onclick="copyText(this, 'vid-prompt-${index}')" class="text-xs text-slate-400 hover:text-purple-300 bg-slate-800 px-2 py-1 rounded transition-colors">Salin</button>
+                                </div>
+                                <p id="vid-prompt-${index}" class="text-xs md:text-sm text-slate-300 leading-relaxed font-mono">
+                                    Smooth cinematic vertical video in ${setting}. Character ${p.videoAction} showcasing ${detail}. ${vibe}, dynamic lighting, high quality social media ad reel.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function getPosesByCategory(category, detail) {
+            if (category.includes('Baju')) {
+                return [
+                    { title: "Dynamic Walkway / Motion", imageFocus: "Full body shot, walking towards camera with confident stride, showcasing the fit, silhouette, and fabric texture of the clothing", videoAction: "walks smoothly towards the camera with a confident smile, gently adjusting the apparel" },
+                    { title: "Side Profile & Stitch Detail", imageFocus: "Three-quarter profile shot highlighting the cut, sleeve structure, and tailoring details", videoAction: "turns sideways to showcase the garment's side cut and texture, fluid natural movement" },
+                    { title: "Casual Leaning / Lifestyle", imageFocus: "Medium shot leaning against a minimalist wall, arms relaxed, emphasizing everyday wearable styling", videoAction: "leans against a wall casually while smiling at the camera, dynamic subtle motion" },
+                    { title: "Close-up Texture & Layering", imageFocus: "Waist-up medium close-up focusing on collar structure, fabric weave, and color vibrancy", videoAction: "adjusts the collar slightly while looking directly into the camera lens" },
+                    { title: "Dynamic Spin & Flow", imageFocus: "Dynamic mid-action shot capturing fabric movement and lightness in a natural environment", videoAction: "does a smooth gentle half-turn, showing how the fabric flows naturally" }
+                ];
+            } else if (category.includes('Jilbab')) {
+                return [
+                    { title: "Frame & Face Soft Lighting", imageFocus: "Close-up portrait emphasizing facial framing, clean draping style, and neat fabric fold around the cheekbones", videoAction: "gently smiles and adjusts the veil fold near the cheek, soft elegant head tilt" },
+                    { title: "Side Profile Drapery", imageFocus: "Profile shot highlighting the flow, length, and neatness of the back and shoulder drapery", videoAction: "turns head gracefully to show the side and back drape movement" },
+                    { title: "Lifestyle Mirror Check", imageFocus: "Medium shot looking into a mirror or soft-focus background, exuding everyday elegance", videoAction: "adjusts styling naturally while looking into camera reflection" },
+                    { title: "Outdoor Breeze Flow", imageFocus: "Waist-up shot with gentle wind effect capturing the lightweight texture and softness of the fabric", videoAction: "wind gently sways the fabric edges while character maintains a serene expression" },
+                    { title: "Direct Engaging Smile", imageFocus: "Chest-up portrait with warm ring-light reflection in eyes, highlighting color harmony and neatness", videoAction: "nods gently with a friendly, welcoming expression suitable for product review" }
+                ];
+            } else if (category.includes('Sepatu')) {
+                return [
+                    { title: "Low Angle Sneaker-Cam", imageFocus: "Low angle shot looking slightly up, character stepping forward to highlight the sole design, texture, and side branding", videoAction: "takes a deliberate step forward, capturing foot motion and sole details clearly" },
+                    { title: "Crossed Legs Seated Pose", imageFocus: "Seated on a modern stool with legs crossed, focusing sharply on the shoe silhouette and laces", videoAction: "shifts foot slightly to catch light on the shoe material, relaxed posture" },
+                    { title: "Urban Walking Stride", imageFocus: "Mid-action stride capture emphasizing comfort, cushioning, and streetwear styling", videoAction: "walks past camera in slow, rhythmic steps highlighting comfort and flexibility" },
+                    { title: "Detail Close-up / Tie Shoe", imageFocus: "Kneeling or crouched pose highlighting toe box, materials, and stitch craftsmanship", videoAction: "adjusts shoelace casually before standing up into a confident posture" },
+                    { title: "Casual Lean Foot Forward", imageFocus: "Standing leaning against a column with one foot extended forward to put maximum focus on footwear", videoAction: "taps foot lightly on the ground to draw attention to t
