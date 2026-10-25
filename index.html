@@ -45,20 +45,24 @@
         <main class="glass-panel rounded-2xl p-6 md:p-8 shadow-2xl mb-8">
             <form id="generatorForm" class="space-y-6">
                 
-                <!-- 1. Upload Wajah Karakter -->
+                <!-- 1. Unggah Foto Wajah Karakter dengan Preview -->
                 <div>
                     <label class="block text-sm font-semibold text-cyan-300 mb-2">
                         1. Unggah Foto Wajah Karakter / Model
                     </label>
-                    <div class="flex items-center justify-center w-full">
-                        <label for="faceFile" class="flex flex-col items-center justify-center w-full h-32 border-2 border-slate-600 border-dashed rounded-xl cursor-pointer bg-slate-900/50 hover:bg-slate-800/60 transition-all">
+                    <div class="flex flex-col sm:flex-row items-center gap-4">
+                        <label for="faceFile" class="flex-1 flex flex-col items-center justify-center w-full h-32 border-2 border-slate-600 border-dashed rounded-xl cursor-pointer bg-slate-900/50 hover:bg-slate-800/60 transition-all">
                             <div class="flex flex-col items-center justify-center pt-5 pb-6 px-4 text-center">
-                                <svg class="w-8 h-8 mb-2 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
-                                <p class="text-sm text-slate-300"><span class="font-semibold text-cyan-400">Klik untuk memilih file</span> atau seret ke sini</p>
-                                <p class="text-xs text-slate-500 mt-1" id="fileNameDisplay">PNG, JPG atau WEBP (Maks. 10MB)</p>
+                                <svg class="w-8 h-8 mb-2 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                                <p class="text-sm text-slate-300"><span class="font-semibold text-cyan-400">Pilih file foto</span> atau seret ke sini</p>
+                                <p class="text-xs text-slate-500 mt-1" id="fileNameDisplay">PNG, JPG atau WEBP</p>
                             </div>
                             <input id="faceFile" type="file" accept="image/*" class="hidden" onchange="handleFileSelect(event)" />
                         </label>
+                        <!-- Image Preview Box -->
+                        <div id="imagePreviewContainer" class="hidden w-28 h-28 rounded-xl overflow-hidden border border-cyan-500/50 bg-slate-900 flex-shrink-0 relative">
+                            <img id="imagePreview" src="" alt="Preview" class="w-full h-full object-cover" />
+                        </div>
                     </div>
                 </div>
 
@@ -93,10 +97,10 @@
                     <div>
                         <label class="block text-xs font-medium text-slate-400 mb-2">Pilih Rekomendasi Latar atau Ketik Manual:</label>
                         <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-2">
-                            <button type="button" onclick="setPreset('setting', 'Modern Studio')" class="preset-btn-setting text-xs py-2 px-3 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg text-slate-300 transition-all">Studio Clean</button>
-                            <button type="button" onclick="setPreset('setting', 'Aesthetic Bedroom')" class="preset-btn-setting text-xs py-2 px-3 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg text-slate-300 transition-all">Kamar Estetik</button>
-                            <button type="button" onclick="setPreset('setting', 'Trendy Cafe')" class="preset-btn-setting text-xs py-2 px-3 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg text-slate-300 transition-all">Kafe Trendy</button>
-                            <button type="button" onclick="setPreset('setting', 'Urban Street')" class="preset-btn-setting text-xs py-2 px-3 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg text-slate-300 transition-all">Urban Street</button>
+                            <button type="button" onclick="setPreset('setting', 'Modern Studio')" class="text-xs py-2 px-3 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg text-slate-300 transition-all">Studio Clean</button>
+                            <button type="button" onclick="setPreset('setting', 'Aesthetic Bedroom')" class="text-xs py-2 px-3 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg text-slate-300 transition-all">Kamar Estetik</button>
+                            <button type="button" onclick="setPreset('setting', 'Trendy Cafe')" class="text-xs py-2 px-3 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg text-slate-300 transition-all">Kafe Trendy</button>
+                            <button type="button" onclick="setPreset('setting', 'Urban Street')" class="text-xs py-2 px-3 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg text-slate-300 transition-all">Urban Street</button>
                         </div>
                         <input type="text" id="settingInput" placeholder="Contoh: Studio minimalis pencahayaan softbox..." class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:border-cyan-400 transition-colors text-sm" required />
                     </div>
@@ -105,10 +109,10 @@
                     <div>
                         <label class="block text-xs font-medium text-slate-400 mb-2">Pilih Rekomendasi Suasana (Vibe) atau Ketik Manual:</label>
                         <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-2">
-                            <button type="button" onclick="setPreset('vibe', 'Cinematic & Moody')" class="preset-btn-vibe text-xs py-2 px-3 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg text-slate-300 transition-all">Cinematic</button>
-                            <button type="button" onclick="setPreset('vibe', 'Edgy & Bold')" class="preset-btn-vibe text-xs py-2 px-3 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg text-slate-300 transition-all">Edgy</button>
-                            <button type="button" onclick="setPreset('vibe', 'Fun & Energetic')" class="preset-btn-vibe text-xs py-2 px-3 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg text-slate-300 transition-all">Fun</button>
-                            <button type="button" onclick="setPreset('vibe', 'Clean & High-End Commercial')" class="preset-btn-vibe text-xs py-2 px-3 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg text-slate-300 transition-all">High-End</button>
+                            <button type="button" onclick="setPreset('vibe', 'Cinematic & Moody')" class="text-xs py-2 px-3 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg text-slate-300 transition-all">Cinematic</button>
+                            <button type="button" onclick="setPreset('vibe', 'Edgy & Bold')" class="text-xs py-2 px-3 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg text-slate-300 transition-all">Edgy</button>
+                            <button type="button" onclick="setPreset('vibe', 'Fun & Energetic')" class="text-xs py-2 px-3 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg text-slate-300 transition-all">Fun</button>
+                            <button type="button" onclick="setPreset('vibe', 'Clean & High-End Commercial')" class="text-xs py-2 px-3 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg text-slate-300 transition-all">High-End</button>
                         </div>
                         <input type="text" id="vibeInput" placeholder="Contoh: High-end commercial, vibrant warm tone..." class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-3 text-slate-200 focus:outline-none focus:border-cyan-400 transition-colors text-sm" required />
                     </div>
@@ -141,9 +145,20 @@
         function handleFileSelect(event) {
             const file = event.target.files[0];
             const display = document.getElementById('fileNameDisplay');
+            const previewContainer = document.getElementById('imagePreviewContainer');
+            const previewImg = document.getElementById('imagePreview');
+
             if (file) {
-                display.textContent = `File dipilih: ${file.name}`;
+                display.textContent = `File: ${file.name}`;
                 display.classList.add('text-cyan-400');
+                
+                // Show Image Preview
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    previewImg.src = e.target.result;
+                    previewContainer.classList.remove('hidden');
+                }
+                reader.readAsDataURL(file);
             }
         }
 
@@ -163,7 +178,6 @@
             const setting = document.getElementById('settingInput').value;
             const vibe = document.getElementById('vibeInput').value;
 
-            // Show loading state simulation or direct generation
             const btn = document.getElementById('generateBtn');
             btn.innerHTML = `<svg class="animate-spin -ml-1 mr-3 h-5 text-black" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg> Menganalisis & Menyusun 5 Varian Pose...`;
             btn.disabled = true;
@@ -173,9 +187,8 @@
                 btn.innerHTML = `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg><span>Analisis & Generate 5 Pilihan Pose Adaptif</span>`;
                 btn.disabled = false;
                 
-                // Scroll to output
                 document.getElementById('outputSection').scrollIntoView({ behavior: 'smooth' });
-            }, 800);
+            }, 600);
         });
 
         function generateOutputVariants(category, detail, setting, vibe) {
@@ -187,7 +200,6 @@
             outputSection.classList.remove('hidden');
             container.innerHTML = '';
 
-            // Generate 5 contextual variations based on category
             let poses = getPosesByCategory(category, detail);
 
             poses.forEach((p, index) => {
@@ -230,7 +242,7 @@
         }
 
         function getPosesByCategory(category, detail) {
-            if (category.includes('Baju')) {
+            if (category && category.includes('Baju')) {
                 return [
                     { title: "Dynamic Walkway / Motion", imageFocus: "Full body shot, walking towards camera with confident stride, showcasing the fit, silhouette, and fabric texture of the clothing", videoAction: "walks smoothly towards the camera with a confident smile, gently adjusting the apparel" },
                     { title: "Side Profile & Stitch Detail", imageFocus: "Three-quarter profile shot highlighting the cut, sleeve structure, and tailoring details", videoAction: "turns sideways to showcase the garment's side cut and texture, fluid natural movement" },
@@ -238,7 +250,7 @@
                     { title: "Close-up Texture & Layering", imageFocus: "Waist-up medium close-up focusing on collar structure, fabric weave, and color vibrancy", videoAction: "adjusts the collar slightly while looking directly into the camera lens" },
                     { title: "Dynamic Spin & Flow", imageFocus: "Dynamic mid-action shot capturing fabric movement and lightness in a natural environment", videoAction: "does a smooth gentle half-turn, showing how the fabric flows naturally" }
                 ];
-            } else if (category.includes('Jilbab')) {
+            } else if (category && category.includes('Jilbab')) {
                 return [
                     { title: "Frame & Face Soft Lighting", imageFocus: "Close-up portrait emphasizing facial framing, clean draping style, and neat fabric fold around the cheekbones", videoAction: "gently smiles and adjusts the veil fold near the cheek, soft elegant head tilt" },
                     { title: "Side Profile Drapery", imageFocus: "Profile shot highlighting the flow, length, and neatness of the back and shoulder drapery", videoAction: "turns head gracefully to show the side and back drape movement" },
@@ -246,10 +258,8 @@
                     { title: "Outdoor Breeze Flow", imageFocus: "Waist-up shot with gentle wind effect capturing the lightweight texture and softness of the fabric", videoAction: "wind gently sways the fabric edges while character maintains a serene expression" },
                     { title: "Direct Engaging Smile", imageFocus: "Chest-up portrait with warm ring-light reflection in eyes, highlighting color harmony and neatness", videoAction: "nods gently with a friendly, welcoming expression suitable for product review" }
                 ];
-            } else if (category.includes('Sepatu')) {
+            } else if (category && category.includes('Sepatu')) {
                 return [
                     { title: "Low Angle Sneaker-Cam", imageFocus: "Low angle shot looking slightly up, character stepping forward to highlight the sole design, texture, and side branding", videoAction: "takes a deliberate step forward, capturing foot motion and sole details clearly" },
                     { title: "Crossed Legs Seated Pose", imageFocus: "Seated on a modern stool with legs crossed, focusing sharply on the shoe silhouette and laces", videoAction: "shifts foot slightly to catch light on the shoe material, relaxed posture" },
-                    { title: "Urban Walking Stride", imageFocus: "Mid-action stride capture emphasizing comfort, cushioning, and streetwear styling", videoAction: "walks past camera in slow, rhythmic steps highlighting comfort and flexibility" },
-                    { title: "Detail Close-up / Tie Shoe", imageFocus: "Kneeling or crouched pose highlighting toe box, materials, and stitch craftsmanship", videoAction: "adjusts shoelace casually before standing up into a confident posture" },
-                    { title: "Casual Lean Foot Forward", imageFocus: "Standing leaning against a column with one foot extended forward to put maximum focus on footwear", videoAction: "taps foot lightly on the ground to draw attention to t
+                    { title: "Urban Walking Stride", imageFocus: "Mid-action stride capture emphasizing comfort, cushioning, and streetwear styling", videoAction: "walks past camera
