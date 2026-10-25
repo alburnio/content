@@ -45,23 +45,33 @@
         <main class="glass-panel rounded-2xl p-6 md:p-8 shadow-2xl mb-8">
             <form id="generatorForm" class="space-y-6">
                 
-                <!-- 1. Unggah Foto Wajah Karakter dengan Preview -->
+                <!-- 1. Unggah Foto Wajah Karakter dengan Perbaikan Penanganan File -->
                 <div>
                     <label class="block text-sm font-semibold text-cyan-300 mb-2">
                         1. Unggah Foto Wajah Karakter / Model
                     </label>
-                    <div class="flex flex-col sm:flex-row items-center gap-4">
-                        <label for="faceFile" class="flex-1 flex flex-col items-center justify-center w-full h-32 border-2 border-slate-600 border-dashed rounded-xl cursor-pointer bg-slate-900/50 hover:bg-slate-800/60 transition-all">
-                            <div class="flex flex-col items-center justify-center pt-5 pb-6 px-4 text-center">
-                                <svg class="w-8 h-8 mb-2 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
-                                <p class="text-sm text-slate-300"><span class="font-semibold text-cyan-400">Pilih file foto</span> atau seret ke sini</p>
-                                <p class="text-xs text-slate-500 mt-1" id="fileNameDisplay">PNG, JPG atau WEBP</p>
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-center w-full">
+                            <label for="faceFile" id="dropZone" class="flex flex-col items-center justify-center w-full h-32 border-2 border-slate-600 border-dashed rounded-xl cursor-pointer bg-slate-900/50 hover:bg-slate-800/60 transition-all">
+                                <div class="flex flex-col items-center justify-center pt-5 pb-6 px-4 text-center">
+                                    <svg class="w-8 h-8 mb-2 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                                    <p class="text-sm text-slate-300"><span class="font-semibold text-cyan-400">Klik untuk memilih file foto</span></p>
+                                    <p class="text-xs text-slate-500 mt-1" id="fileNameDisplay">PNG, JPG, atau WEBP (Maksimal 10MB)</p>
+                                </div>
+                                <input id="faceFile" type="file" accept="image/png, image/jpeg, image/webp" class="hidden" onchange="handleFileSelect(event)" />
+                            </label>
+                        </div>
+                        
+                        <!-- Image Preview Box (Muncul otomatis saat file dipilih) -->
+                        <div id="imagePreviewContainer" class="hidden flex items-center space-x-4 p-3 bg-slate-900/80 rounded-xl border border-cyan-500/30">
+                            <img id="imagePreview" src="" alt="Preview" class="w-16 h-16 rounded-lg object-cover border border-slate-700" />
+                            <div class="flex-1 min-w-0">
+                                <p id="previewFileName" class="text-xs font-medium text-cyan-300 truncate"></p>
+                                <p class="text-[10px] text-emerald-400 mt-0.5">✓ Foto berhasil dimuat ke sistem</p>
                             </div>
-                            <input id="faceFile" type="file" accept="image/*" class="hidden" onchange="handleFileSelect(event)" />
-                        </label>
-                        <!-- Image Preview Box -->
-                        <div id="imagePreviewContainer" class="hidden w-28 h-28 rounded-xl overflow-hidden border border-cyan-500/50 bg-slate-900 flex-shrink-0 relative">
-                            <img id="imagePreview" src="" alt="Preview" class="w-full h-full object-cover" />
+                            <button type="button" onclick="removeImage()" class="text-xs text-rose-400 hover:text-rose-300 bg-rose-950/40 border border-rose-900/50 px-3 py-1.5 rounded-lg transition-colors">
+                                Ganti Foto
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -142,24 +152,35 @@
 
     <!-- Script Logic -->
     <script>
+        let uploadedImageFile = null;
+
         function handleFileSelect(event) {
             const file = event.target.files[0];
-            const display = document.getElementById('fileNameDisplay');
+            const dropZone = document.getElementById('dropZone');
             const previewContainer = document.getElementById('imagePreviewContainer');
             const previewImg = document.getElementById('imagePreview');
+            const previewName = document.getElementById('previewFileName');
 
             if (file) {
-                display.textContent = `File: ${file.name}`;
-                display.classList.add('text-cyan-400');
+                uploadedImageFile = file;
+                previewName.textContent = file.name;
                 
-                // Show Image Preview
+                // Read and render image preview
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     previewImg.src = e.target.result;
+                    dropZone.classList.add('hidden');
                     previewContainer.classList.remove('hidden');
                 }
                 reader.readAsDataURL(file);
             }
+        }
+
+        function removeImage() {
+            uploadedImageFile = null;
+            document.getElementById('faceFile').value = '';
+            document.getElementById('imagePreviewContainer').classList.add('hidden');
+            document.getElementById('dropZone').classList.remove('hidden');
         }
 
         function setPreset(type, value) {
@@ -262,4 +283,41 @@
                 return [
                     { title: "Low Angle Sneaker-Cam", imageFocus: "Low angle shot looking slightly up, character stepping forward to highlight the sole design, texture, and side branding", videoAction: "takes a deliberate step forward, capturing foot motion and sole details clearly" },
                     { title: "Crossed Legs Seated Pose", imageFocus: "Seated on a modern stool with legs crossed, focusing sharply on the shoe silhouette and laces", videoAction: "shifts foot slightly to catch light on the shoe material, relaxed posture" },
-                    { title: "Urban Walking Stride", imageFocus: "Mid-action stride capture emphasizing comfort, cushioning, and streetwear styling", videoAction: "walks past camera
+                    { title: "Urban Walking Stride", imageFocus: "Mid-action stride capture emphasizing comfort, cushioning, and streetwear styling", videoAction: "walks past camera in slow, rhythmic steps highlighting comfort and flexibility" },
+                    { title: "Detail Close-up / Tie Shoe", imageFocus: "Kneeling or crouched pose highlighting toe box, materials, and stitch craftsmanship", videoAction: "adjusts shoelace casually before standing up into a confident posture" },
+                    { title: "Casual Lean Foot Forward", imageFocus: "Standing leaning against a column with one foot extended forward to put maximum focus on footwear", videoAction: "taps foot lightly on the ground to draw attention to the product" }
+                ];
+            } else if (category && category.includes('Makanan')) {
+                return [
+                    { title: "First Bite / Taste Test", imageFocus: "Close-up shot of character taking a delicious first bite, eyes lit up with enjoyment, holding the food package clearly", videoAction: "takes a delicious bite with an expression of pure satisfaction and delight" },
+                    { title: "Product Presentation (Unboxing/Hold)", imageFocus: "Waist-up shot holding the food product directly towards the camera like a passionate food reviewer", videoAction: "holds the food product up to the current camera and points to it enthusiastically" },
+                    { title: "Cozy Tasting Moment", imageFocus: "Sitting at a table with warm ambiance, about to enjoy the meal with inviting expression", videoAction: "gently picks up a piece of the food item, smiling warmly at the camera" },
+                    { title: "Drizzle / Sauce Interaction", imageFocus: "Medium close-up showing interaction with dipping sauce or steam rising from the fresh food", videoAction: "dips the food item into sauce or lifts it showing steam/texture, vibrant movement" },
+                    { title: "Happy Recommendation Pose", imageFocus: "Holding the product close to cheek with a joyful thumbs-up gesture, high energy aesthetic", videoAction: "gives an enthusiastic nod and thumbs-up while showcasing the food package" }
+                ];
+            } else {
+                return [
+                    { title: "Hero Product Showcase", imageFocus: "Direct engaging pose holding the product prominently at chest level, clear sharp focus", videoAction: "holds and presents the product proudly toward the camera with a warm smile" },
+                    { title: "Lifestyle Interaction", imageFocus: "Natural candid pose actively using or interacting with the product in its intended environment", videoAction: "interacts smoothly with the product, showing practical usage in real time" },
+                    { title: "Close-up Detail Focus", imageFocus: "Macro-style framing focusing heavily on texture, branding, and superior build quality", videoAction: "slowly rotates the product to display all angles clearly to the viewer" },
+                    { title: "Aspirational Portrait", imageFocus: "Confident upper-body portrait with product integrated naturally into the aesthetic", videoAction: "poses confidently with subtle motion and engaging facial expression" },
+                    { title: "Dynamic Presentation", imageFocus: "Energetic movement shot presenting the product with high-converting marketing framing", videoAction: "smoothly brings the product into frame with an inviting, high-energy gesture" }
+                ];
+            }
+        }
+
+        function copyText(btnElement, elementId) {
+            const textToCopy = document.getElementById(elementId).innerText;
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                const originalText = btnElement.innerText;
+                btnElement.innerText = "Tersalin!";
+                btnElement.classList.add('text-cyan-400');
+                setTimeout(() => {
+                    btnElement.innerText = originalText;
+                    btnElement.classList.remove('text-cyan-400');
+                }, 1500);
+            });
+        }
+    </script>
+</body>
+</html>
